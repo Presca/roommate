@@ -9,6 +9,13 @@ enum RoommateNotifier {
     static let stageKey = "stage"
 
     static func post(stage: Stage, bedtime: String) {
+        let request = UNNotificationRequest(identifier: "roommate.visit.\(stage.rawValue)",
+                                            content: content(stage: stage, bedtime: bedtime),
+                                            trigger: nil)
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    static func content(stage: Stage, bedtime: String) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = RoommateLines.shieldTitle(for: stage)
         content.body = RoommateLines.lines(for: stage, bedtime: bedtime).joined(separator: " ")
@@ -21,10 +28,7 @@ enum RoommateNotifier {
         if let attachment = imageAttachment(named: stage.standingPose) {
             content.attachments = [attachment]
         }
-        let request = UNNotificationRequest(identifier: "roommate.visit.\(stage.rawValue)",
-                                            content: content,
-                                            trigger: nil)
-        UNUserNotificationCenter.current().add(request)
+        return content
     }
 
     static func clearAll() {

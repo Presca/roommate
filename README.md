@@ -23,15 +23,37 @@ DeviceActivity). Everything stays on your phone.
 The home screen shows her sitting with her book: **happy** (♡), **neutral**
 ("...") or **annoyed** (💢) depending on the bars.
 
+## Trying it without a paid developer account (demo)
+
+Family Controls can't be signed by a free "Personal Team", so the repo has a
+second target, **RoommateDemo**, with the same app and none of the Screen
+Time parts. She can't block apps in it. Instead:
+
+- at lights-off you get a notification from her (sleepy pose);
+- 15 and 30 minutes later, two more, grumpier, unless you said goodnight;
+- tapping a notification, or opening the app during bedtime, plays the
+  animated visit; the buttons in it update her happiness / frustration and
+  the night log, and "not yet..." pushes the follow-ups 15 minutes out.
+
+Setup is the same as below except you can skip the team / entitlement
+steps: run `./bootstrap.sh`, pick the **RoommateDemo** scheme at the top of
+Xcode, choose your iPhone, and press ▶. With a free account Xcode asks you
+to add your Apple ID under *Settings ▸ Accounts* and to trust the
+certificate on the phone (*Settings ▸ General ▸ VPN & Device Management*).
+Free builds stop launching after 7 days – just press ▶ again.
+
+The demo runs in the Simulator too, which is handy for the animation.
+
 ## What you need
 
 - An iPhone on **iOS 16 or newer**. The Screen Time API does not work in the
   Simulator – you have to run on a real phone.
 - A Mac with **Xcode 15+**.
-- A **paid Apple Developer account** ($99/yr). Family Controls is not
-  available to free "Personal Team" accounts. For your own phone the
-  *development* entitlement is enough – no need to apply to Apple for the
-  distribution one.
+- For the real thing (blocking apps): a **paid Apple Developer account**
+  ($99/yr). Family Controls is not available to free "Personal Team"
+  accounts. For your own phone the *development* entitlement is enough – no
+  need to apply to Apple for the distribution one. For the **demo** target a
+  free account is fine.
 - Python 3 + Pillow, only to slice the character sheets (`pip3 install pillow`).
 
 ## Setup
@@ -110,7 +132,7 @@ On the phone:
 ## Layout
 
 ```
-project.yml                      XcodeGen spec (4 targets, entitlements, plists)
+project.yml                      XcodeGen spec (app, demo app, 3 extensions)
 bootstrap.sh                     installs xcodegen, generates Roommate.xcodeproj
 Scripts/slice_sheets.py          character sheets → transparent poses → asset catalog
 Artwork/                         your two sheets go here (git-ignored)
@@ -121,7 +143,8 @@ Shared/                          code + artwork compiled into the app AND the ex
 Roommate/                        the app
   RoommateApp.swift              entry, notification tap handling, deep link roommate://visit
   RoommateModel.swift            observable state for SwiftUI
-  ScreenTimeManager.swift        authorization + DeviceActivity schedule/events
+  ScreenTimeManager.swift        authorization + DeviceActivity schedule/events;
+                                 DemoScheduler (notifications) when built with -DDEMO
   Theme.swift                    colours, font loader (Cute Planner or SF Rounded)
   Views/                         HomeView, SettingsView, VisitSceneView (the animation),
                                  TypewriterText + SpeechBubble, MoodBar, CharacterImage

@@ -30,6 +30,12 @@ final class RoommateModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var visit: VisitRequest?
 
+    #if DEMO
+    let isDemo = true
+    #else
+    let isDemo = false
+    #endif
+
     init() {
         refresh()
     }
@@ -37,6 +43,7 @@ final class RoommateModel: ObservableObject {
     // MARK: Reading
 
     func refresh() {
+        ScreenTimeManager.handleForeground(mood: store)
         happiness = store.happiness
         frustration = store.frustration
         stage = store.stage
@@ -139,14 +146,20 @@ final class RoommateModel: ObservableObject {
     /// From the in-app visit: "okay, I'll turn it off".
     func comply() {
         store.complied()
-        if isEnabled { Shielding.apply(using: store) }
+        if isEnabled {
+            Shielding.apply(using: store)
+            ScreenTimeManager.didComply(mood: store)
+        }
         refresh()
     }
 
     /// From the in-app visit: "not yet...".
     func snooze() {
         store.snoozed()
-        if isEnabled { Shielding.clear() }
+        if isEnabled {
+            Shielding.clear()
+            ScreenTimeManager.didSnooze(mood: store)
+        }
         refresh()
     }
 

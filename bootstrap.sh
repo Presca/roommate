@@ -29,4 +29,5 @@ else
   echo "     python3 Scripts/slice_sheets.py Artwork/standing.png Artwork/sitting.png"
 fi
 
+echo "→ schemes: RoommateDemo (free account, notifications only) · Roommate (paid account, blocks apps)"
 open Roommate.xcodeproj

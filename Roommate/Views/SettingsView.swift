@@ -16,7 +16,7 @@ struct SettingsView: View {
                 VStack(spacing: 18) {
                     onSwitch
                     times
-                    apps
+                    if model.isDemo { demoNote } else { apps }
                     danger
                     about
                 }
@@ -69,9 +69,11 @@ struct SettingsView: View {
                 }
             }
             .disabled(isWorking)
-            Text(model.isAuthorized
-                 ? "screen time access granted ✓"
-                 : "turning this on asks for Screen Time access. it stays on your phone.")
+            Text(model.isDemo
+                 ? "demo: she'll send you a notification at lights-off instead of locking your apps."
+                 : model.isAuthorized
+                     ? "screen time access granted ✓"
+                     : "turning this on asks for Screen Time access. it stays on your phone.")
                 .font(.cute(13))
                 .foregroundStyle(Theme.soft)
         }
@@ -143,6 +145,19 @@ struct SettingsView: View {
                     .foregroundStyle(Theme.blush)
             }
         }
+        .cuteCard()
+    }
+
+    private var demoNote: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("demo build")
+                .font(.cute(16, weight: .semibold))
+                .foregroundStyle(Theme.ink)
+            Text("blocking apps needs Apple's Family Controls entitlement, which free developer accounts can't sign. in this build she knocks with a notification at lights-off, then again 15 and 30 minutes later if you haven't said goodnight. tap a notification (or open the app at night) to see her visit.")
+                .font(.cute(13))
+                .foregroundStyle(Theme.soft)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .cuteCard()
     }
 

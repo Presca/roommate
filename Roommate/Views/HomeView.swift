@@ -73,7 +73,9 @@ struct HomeView: View {
         if !model.isEnabled { return "she's not watching your bedtime yet. turn her on in settings ⚙️" }
         switch model.stage {
         case .none:      return "she'll come check on you at \(model.bedtimeString)"
-        case .sleepy:    return "she's up and waiting for you to turn the phone off"
+        case .sleepy:    return model.isDemo
+            ? "she's up. (demo: nothing is blocked, but she's counting.)"
+            : "she's up and waiting for you to turn the phone off"
         case .frustrated: return "she's back, and less patient this time"
         case .fuming:    return "she's really fed up. lights off."
         case .asleep:    return "she's asleep. keep it down until \(model.wakeTimeString)"

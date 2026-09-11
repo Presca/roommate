@@ -146,9 +146,14 @@ final class MoodStore {
     }
 
     init(defaults: UserDefaults? = nil) {
+        #if DEMO
+        // No App Group on a free developer account – the demo has no extensions anyway.
+        self.defaults = defaults ?? .standard
+        #else
         self.defaults = defaults
             ?? UserDefaults(suiteName: RoommateConfig.appGroup)
             ?? .standard
+        #endif
         self.defaults.register(defaults: [
             Key.happiness: 70,
             Key.frustration: 10,
@@ -382,6 +387,9 @@ enum Shielding {
     /// Put her in front of the apps. The Shield Configuration extension
     /// reads `MoodStore.shared.stage` to decide which pose and line to show.
     static func apply(using mood: MoodStore = .shared) {
+        #if DEMO
+        return   // demo build can't block apps
+        #endif
         let s = store
         if mood.shieldAllApps {
             s.shield.applications = nil
@@ -401,6 +409,9 @@ enum Shielding {
 
     /// Let you back in.
     static func clear() {
+        #if DEMO
+        return
+        #endif
         store.clearAllSettings()
     }
 }

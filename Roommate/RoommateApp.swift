@@ -20,7 +20,7 @@ struct RoommateApp: App {
                     if phase == .active { model.refresh() }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .roommateVisitRequested)) { note in
-                    if let stage = note.object as? Stage {
+                    if let stage = note.object as? Stage, model.visit == nil {
                         model.visit = VisitRequest(stage: stage, isPreview: false)
                     }
                 }
@@ -49,8 +49,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let info = response.notification.request.content.userInfo
         if let raw = info[RoommateNotifier.stageKey] as? Int, let stage = Stage(rawValue: raw) {
-            MoodStore.shared.pendingVisitStage = stage
-            NotificationCenter.default.post(name: .roommateVisitRequested, object: stage)
+            let mood = MoodStore.shared
+            ScreenTimeManager.noteNotificationTapped(stage: stage, mood: mood)
+            NotificationCenter.default.post(name: .roommateVisitRequested,
+                                            object: mood.pendingVisitStage ?? stage)
         }
         completionHandler()
     }
