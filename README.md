@@ -23,6 +23,15 @@ DeviceActivity). Everything stays on your phone.
 The home screen shows her sitting with her book: **happy** (♡), **neutral**
 ("...") or **annoyed** (💢) depending on the bars.
 
+## Try it in a browser first (no Xcode at all)
+
+`web/index.html` is the whole demo as one web page: open it on your phone
+or laptop, or serve the folder with `python3 -m http.server`. It has the
+same mood logic, the animated visit, a ⚡ fast mode (she comes back every
+20 seconds instead of 15 minutes), a "make it bedtime now" button, and a
+slot to drop in the two character sheets and the font. Everything is kept
+in the browser's local storage.
+
 ## Trying it without a paid developer account (demo)
 
 Family Controls can't be signed by a free "Personal Team", so the repo has a
@@ -132,6 +141,7 @@ On the phone:
 ## Layout
 
 ```
+web/index.html                   browser demo of the whole thing, single file
 project.yml                      XcodeGen spec (app, demo app, 3 extensions)
 bootstrap.sh                     installs xcodegen, generates Roommate.xcodeproj
 Scripts/slice_sheets.py          character sheets → transparent poses → asset catalog

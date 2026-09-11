@@ -1,0 +1,861 @@
+<title>roommate</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Nunito:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #FAF7F2;
+    --card: #FFFFFF;
+    --ink: #3B302B;
+    --soft: #7D7068;
+    --line: rgba(59, 48, 43, 0.16);
+    --denim: #C4D6E6;
+    --denim-dark: #6E8BA6;
+    --blush: #E8909A;
+    --blush-light: #F8D9DD;
+    --grumpy: #8E88A0;
+    --mint: #DDEDE8;
+    --track: rgba(59, 48, 43, 0.08);
+    --shadow: 0 10px 30px rgba(59, 48, 43, 0.10);
+    --face: #FCEBE2;
+    --hair: #3E2B25;
+    --door: #D9D3CD;
+    --hand: "Patrick Hand", "Comic Neue", "Segoe Print", "Chalkboard SE", cursive;
+    --sans: "Nunito", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #211E24;
+      --card: #2B272F;
+      --ink: #EFE8E0;
+      --soft: #B4A9A0;
+      --line: rgba(239, 232, 224, 0.16);
+      --denim: #55697F;
+      --denim-dark: #9DB7CF;
+      --blush: #E8909A;
+      --blush-light: #4D3438;
+      --grumpy: #A29BB5;
+      --mint: #34443F;
+      --track: rgba(239, 232, 224, 0.10);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --door: #4A444C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #211E24;
+    --card: #2B272F;
+    --ink: #EFE8E0;
+    --soft: #B4A9A0;
+    --line: rgba(239, 232, 224, 0.16);
+    --denim: #55697F;
+    --denim-dark: #9DB7CF;
+    --blush: #E8909A;
+    --blush-light: #4D3438;
+    --grumpy: #A29BB5;
+    --mint: #34443F;
+    --track: rgba(239, 232, 224, 0.10);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --door: #4A444C;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--hand);
+    font-size: 19px;
+    line-height: 1.35;
+    padding-inline: 16px;
+    padding-block: 12px 40px;
+    min-height: 100vh;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 3px solid var(--denim-dark);
+    outline-offset: 2px;
+  }
+  img { max-width: 100%; }
+
+  .app { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 4px 0;
+  }
+  header.top h1 { font-size: 30px; margin: 0; font-weight: 400; letter-spacing: 0.5px; }
+  .icon-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1.5px solid var(--line); background: var(--card);
+    display: grid; place-items: center; color: var(--soft);
+  }
+  .icon-btn svg { width: 20px; height: 20px; }
+
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 24px;
+    padding: 18px;
+  }
+  .card.hero { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  .portrait { width: 100%; height: 230px; display: grid; place-items: center; }
+  .portrait svg, .portrait img { height: 100%; width: auto; max-width: 100%; }
+  .caption { font-size: 22px; margin: 0; text-wrap: balance; }
+  .status { color: var(--soft); font-size: 16px; margin: 0; text-wrap: balance; }
+  .stage-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; background: var(--mint); color: var(--ink);
+  }
+  .stage-pill.off { background: var(--track); color: var(--soft); }
+  .stage-pill.awake { background: var(--blush-light); }
+
+  .bars { display: flex; flex-direction: column; gap: 14px; }
+  .bar { display: flex; flex-direction: column; gap: 6px; }
+  .bar .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .bar .val { font-family: var(--sans); font-weight: 700; font-size: 14px; color: var(--soft); font-variant-numeric: tabular-nums; }
+  .bar .track { height: 14px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 999px; min-width: 14px; transition: width 0.6s cubic-bezier(.3,1.3,.5,1); }
+  .bar.happy .fill { background: var(--blush); }
+  .bar.grump .fill { background: var(--grumpy); }
+  .hint { color: var(--soft); font-size: 15px; margin: 0; }
+
+  .sched { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .sched .t { display: flex; flex-direction: column; gap: 2px; }
+  .sched .t small { color: var(--soft); font-size: 14px; }
+  .sched .t strong { font-family: var(--sans); font-weight: 700; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .sched .spacer { flex: 1; }
+  .moon {
+    width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--track); color: var(--soft); font-size: 22px;
+  }
+  .moon.on { background: var(--mint); color: var(--denim-dark); }
+
+  .preview { display: flex; flex-direction: column; gap: 10px; }
+  .preview h2 { margin: 0; font-size: 19px; font-weight: 400; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    border: 1.5px solid var(--line); background: transparent; color: var(--ink);
+    padding: 8px 14px; border-radius: 999px; font-size: 17px;
+  }
+  .chip:hover { background: var(--track); }
+
+  .nights { display: flex; flex-direction: column; gap: 8px; }
+  .nights h2 { margin: 0 0 4px; font-size: 19px; font-weight: 400; }
+  .night { display: flex; gap: 12px; align-items: baseline; }
+  .night .d { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--soft); width: 86px; flex: none; }
+  .empty { color: var(--soft); font-size: 16px; margin: 0; }
+
+  /* ---------- settings sheet ---------- */
+  .sheet-bg {
+    position: fixed; inset: 0; background: rgba(30, 24, 22, 0.35);
+    display: none; z-index: 20;
+  }
+  .sheet-bg.open { display: block; }
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 21;
+    background: var(--paper); border-radius: 26px 26px 0 0;
+    max-height: 88vh; overflow-y: auto;
+    padding-inline: 16px; padding-block: 12px 32px;
+    transform: translateY(105%); transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet .inner { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 4px; }
+  .sheet header { display: flex; justify-content: space-between; align-items: center; }
+  .sheet header h2 { margin: 0; font-size: 24px; font-weight: 400; }
+  .link-btn { background: none; border: none; color: var(--denim-dark); font-size: 19px; padding: 6px 4px; }
+  .field { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .field label { font-size: 18px; }
+  .field input[type="time"] {
+    font-family: var(--sans); font-weight: 700; font-size: 17px;
+    border: 1.5px solid var(--line); border-radius: 12px; padding: 6px 10px; background: var(--card);
+  }
+  .switch { position: relative; width: 52px; height: 32px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .switch span {
+    position: absolute; inset: 0; border-radius: 999px; background: var(--track); transition: background 0.2s;
+  }
+  .switch span::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.2s;
+  }
+  .switch input:checked + span { background: var(--denim-dark); }
+  .switch input:checked + span::after { transform: translateX(20px); }
+  .switch input:focus-visible + span { outline: 3px solid var(--denim-dark); outline-offset: 2px; }
+  .card.section { display: flex; flex-direction: column; gap: 12px; }
+  .card.section h3 { margin: 0; font-size: 19px; font-weight: 400; }
+  .card.section p { margin: 0; font-size: 15px; color: var(--soft); }
+  .btn {
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 10px 16px; border-radius: 999px; font-size: 18px;
+  }
+  .btn.primary { background: var(--denim-dark); border-color: var(--denim-dark); color: #fff; }
+  .btn.danger { color: var(--blush); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .file { display: flex; flex-direction: column; gap: 6px; }
+  .file input { font-family: var(--sans); font-size: 14px; }
+  .ok { color: var(--denim-dark); }
+  .warn { color: var(--blush); }
+
+  /* ---------- the visit ---------- */
+  .visit {
+    position: fixed; inset: 0; z-index: 30; background: var(--paper);
+    display: none; flex-direction: column;
+    padding-inline: 16px; padding-block: 14px 24px;
+  }
+  .visit.open { display: flex; }
+  .visit .vhead { display: flex; justify-content: space-between; align-items: center; color: var(--soft); font-size: 17px; }
+  .visit .stagebox { position: relative; flex: 1; min-height: 0; }
+  .bubble {
+    position: absolute; left: 8%; right: 6%; bottom: 61%;
+    background: var(--card); border: 2px solid var(--ink); border-radius: 22px;
+    padding: 14px 18px 16px; font-size: 23px; line-height: 1.3;
+    opacity: 0; transform: scale(0.85); transform-origin: 20% 100%;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(.3,1.4,.5,1);
+    max-width: 420px; margin-inline: auto;
+  }
+  .bubble.show { opacity: 1; transform: scale(1); }
+  .bubble::before, .bubble::after {
+    content: ""; position: absolute; left: 34px; bottom: -16px;
+    border-style: solid; border-width: 16px 10px 0 4px;
+    border-color: var(--ink) transparent transparent transparent;
+  }
+  .bubble::after { bottom: -12px; left: 36px; border-width: 12px 7px 0 3px; border-color: var(--card) transparent transparent transparent; }
+  .bubble .ghost { visibility: hidden; }
+  .bubble .typed { position: absolute; left: 18px; right: 18px; top: 14px; }
+  .bubble .typed::after { content: "▍"; color: var(--blush); animation: blink 0.9s steps(1) infinite; }
+  .bubble.done .typed::after { content: ""; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .char {
+    position: absolute; left: 4%; bottom: 0; height: 58%; max-height: 520px;
+    transform: translateX(-140%);
+    transition: transform 1.1s cubic-bezier(.2,.8,.3,1);
+  }
+  .char.in { transform: translateX(0); }
+  .char.out { transform: translateX(160vw); transition: transform 1.4s cubic-bezier(.6,0,.8,.4); }
+  .char svg, .char img { height: 100%; width: auto; display: block; transition: opacity 0.3s; }
+  .visit .actions { display: flex; flex-direction: column; gap: 8px; align-items: center; min-height: 104px; justify-content: flex-end; }
+  .visit .actions button.big {
+    width: min(100%, 360px); padding: 13px; border-radius: 999px; font-size: 21px;
+    background: var(--denim-dark); color: #fff; border: none;
+  }
+  .visit .actions button.small { background: none; border: none; color: var(--soft); font-size: 17px; padding: 4px 10px; }
+  .visit .actions.hidden { visibility: hidden; }
+  .gone {
+    position: absolute; inset: 0; display: none; place-items: center; padding: 24px;
+  }
+  .gone.show { display: grid; }
+  .gone .box {
+    background: var(--card); border: 1.5px solid var(--line); border-radius: 24px; padding: 22px 26px;
+    text-align: center; font-size: 21px; display: flex; flex-direction: column; gap: 14px; max-width: 340px;
+  }
+  .gone .box button { border: 2px solid var(--denim-dark); background: none; color: var(--denim-dark); border-radius: 999px; padding: 8px 22px; font-size: 18px; align-self: center; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 999px;
+    font-size: 16px; opacity: 0; transition: all 0.25s; z-index: 40; pointer-events: none; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .char, .char.out, .bubble, .bar .fill, .sheet { transition: none; }
+  }
+</style>
+
+<div class="app">
+  <header class="top">
+    <h1>roommate</h1>
+    <button class="icon-btn" id="btn-settings" aria-label="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+    </button>
+  </header>
+
+  <section class="card hero">
+    <div class="portrait" id="portrait"></div>
+    <p class="caption" id="caption">she's in a good mood ♡</p>
+    <p class="status" id="status"></p>
+    <span class="stage-pill off" id="pill">off</span>
+  </section>
+
+  <section class="card bars">
+    <div class="bar happy">
+      <div class="row"><span>♡ happiness</span><span class="val" id="hap-val">70</span></div>
+      <div class="track"><div class="fill" id="hap-fill" style="width:70%"></div></div>
+    </div>
+    <div class="bar grump">
+      <div class="row"><span>💢 frustration</span><span class="val" id="fru-val">10</span></div>
+      <div class="track"><div class="fill" id="fru-fill" style="width:10%"></div></div>
+    </div>
+    <p class="hint">she gets happier every night you let her sleep, and annoyed every time you keep the screen on past bedtime.</p>
+  </section>
+
+  <section class="card sched" id="sched" role="button" tabindex="0" aria-label="open schedule settings">
+    <div class="t"><small>lights off</small><strong id="bed-str">11:00 pm</strong></div>
+    <div class="t"><small>she wakes up</small><strong id="wake-str">7:00 am</strong></div>
+    <div class="spacer"></div>
+    <div class="moon" id="moon">☾</div>
+  </section>
+
+  <section class="card preview">
+    <h2>preview her visit</h2>
+    <div class="chips">
+      <button class="chip" data-preview="1">first · sleepy</button>
+      <button class="chip" data-preview="2">second · frustrated</button>
+      <button class="chip" data-preview="3">third · fuming</button>
+    </div>
+  </section>
+
+  <section class="card nights">
+    <h2>recent nights</h2>
+    <div id="nights"><p class="empty">no nights yet. turn her on in settings and she'll start keeping track.</p></div>
+  </section>
+</div>
+
+<!-- settings -->
+<div class="sheet-bg" id="sheet-bg"></div>
+<div class="sheet" id="sheet" role="dialog" aria-label="settings">
+  <div class="inner">
+    <div class="grab"></div>
+    <header><h2>settings</h2><button class="link-btn" id="btn-done">done</button></header>
+
+    <div class="card section">
+      <div class="field">
+        <label for="enabled">she watches my bedtime</label>
+        <span class="switch"><input type="checkbox" id="enabled"><span></span></span>
+      </div>
+      <p id="enabled-hint">web demo: nothing gets blocked. she shows up on this page at lights-off, and again every 15 minutes until you say goodnight.</p>
+    </div>
+
+    <div class="card section">
+      <div class="field"><label for="bedtime">lights off at</label><input type="time" id="bedtime" value="23:00"></div>
+      <div class="field"><label for="wake">she wakes up at</label><input type="time" id="wake" value="07:00"></div>
+      <p>she comes out at lights-off. if you keep going she's back every 15 minutes, a little grumpier each time.</p>
+    </div>
+
+    <div class="card section">
+      <h3>testing</h3>
+      <div class="field">
+        <label for="fast">⚡ fast mode <span class="hint">(15 min → 20 s)</span></label>
+        <span class="switch"><input type="checkbox" id="fast"><span></span></span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="btn-bedtime-now">make it bedtime now</button>
+        <button class="btn" id="btn-morning">it's morning</button>
+      </div>
+      <p>"bedtime now" sets lights-off to the current minute so she comes out on the next tick. "morning" ends the night and tallies it.</p>
+      <div class="btn-row">
+        <button class="btn" id="btn-notif">allow notifications</button>
+      </div>
+      <p id="notif-hint">if this tab is in the background when she comes out, she knocks with a notification instead. on iPhone that only works after "add to home screen".</p>
+    </div>
+
+    <div class="card section">
+      <h3>her artwork</h3>
+      <p>drop in the two character sheets and they replace the sketch. the page finds the figures, cuts out the background and keeps everything on this device.</p>
+      <div class="file"><label for="sheet-standing">standing sheet (door · pointing · scribble · walking)</label><input type="file" id="sheet-standing" accept="image/*"></div>
+      <div class="file"><label for="sheet-sitting">sitting sheet (happy · "..." · annoyed)</label><input type="file" id="sheet-sitting" accept="image/*"></div>
+      <p id="art-status"></p>
+      <div class="btn-row"><button class="btn" id="btn-art-reset">back to the sketch</button></div>
+    </div>
+
+    <div class="card section">
+      <h3>font</h3>
+      <p>using Patrick Hand as a stand-in for Cute Planner. drop the real .ttf/.otf here to use it.</p>
+      <div class="file"><input type="file" id="font-file" accept=".ttf,.otf,font/ttf,font/otf"></div>
+      <p id="font-status"></p>
+    </div>
+
+    <div class="card section">
+      <div class="btn-row"><button class="btn danger" id="btn-reset">reset her mood</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- the visit -->
+<div class="visit" id="visit" role="dialog" aria-label="roommate visit">
+  <div class="vhead"><span id="vtitle">roommate is awake 😴</span><button class="icon-btn" id="btn-vclose" aria-label="close">✕</button></div>
+  <div class="stagebox">
+    <div class="bubble" id="bubble"><span class="ghost" id="ghost"></span><span class="typed" id="typed"></span></div>
+    <div class="char" id="char"></div>
+    <div class="gone" id="gone"><div class="box"><span id="gone-text"></span><button id="btn-gone-close">close</button></div></div>
+  </div>
+  <div class="actions hidden" id="actions">
+    <button class="big" id="btn-off">okay, I'll turn it off 🌙</button>
+    <button class="small" id="btn-notyet">not yet...</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'roommate.web.v1';
+  const ART_KEY = 'roommate.web.art';
+  const FONT_KEY = 'roommate.web.font';
+  const ESCALATE_MIN = 15;
+
+  // ---------- state ----------
+  const defaults = () => ({
+    happiness: 70, frustration: 10, stage: 0, snoozes: 0, complied: false,
+    nightStartedAt: null, lastVisitAt: null, pendingVisit: null,
+    bedtime: '23:00', wake: '07:00', enabled: false, fast: false, history: [],
+  });
+  let S = load();
+  function load() {
+    try { return Object.assign(defaults(), JSON.parse(localStorage.getItem(KEY) || '{}')); }
+    catch { return defaults(); }
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
+  const clamp = (v) => Math.max(0, Math.min(100, v));
+
+  // ---------- lines ----------
+  const LINES = {
+    1: (bed) => [`it's ${bed}...`, "your phone screen is too bright, it's disturbing my sleep.", 'can you please turn it off? thanks...'],
+    2: () => ["please, I'm trying to sleep.", 'you should too...'],
+    3: () => ["...you're still on it.", "I'm not asking again. lights off. now."],
+    4: () => ['zzz...', "(she finally fell asleep. don't wake her.)"],
+  };
+  const TITLES = { 0: 'roommate', 1: 'roommate is awake 😴', 2: 'roommate, again 😒', 3: 'roommate 💢', 4: "shh... she's asleep 💤" };
+  const THANKS = ['thank you...', 'goodnight.'];
+
+  // ---------- time helpers ----------
+  const toMin = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  function fmt(hhmm) {
+    const [h, m] = hhmm.split(':').map(Number);
+    const d = new Date(); d.setHours(h, m, 0, 0);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+  }
+  function isBedtime(now = new Date()) {
+    const n = now.getHours() * 60 + now.getMinutes();
+    const a = toMin(S.bedtime), b = toMin(S.wake);
+    return a < b ? (n >= a && n < b) : (n >= a || n < b);
+  }
+  const escalateMs = () => (S.fast ? 20 : ESCALATE_MIN * 60) * 1000;
+
+  // ---------- mood logic (mirrors the Swift MoodStore) ----------
+  function nightStarted() {
+    S.stage = 1; S.snoozes = 0; S.complied = false;
+    S.nightStartedAt = Date.now(); S.lastVisitAt = Date.now(); S.pendingVisit = 1;
+  }
+  function complied() {
+    if (S.stage === 4) return;
+    S.complied = true;
+    S.happiness = clamp(S.happiness + (S.snoozes === 0 ? 10 : 3));
+    S.stage = 4; S.pendingVisit = null;
+  }
+  function snoozed() {
+    S.snoozes += 1;
+    S.frustration = clamp(S.frustration + 15);
+    S.happiness = clamp(S.happiness - 5);
+    S.lastVisitAt = Date.now(); S.pendingVisit = null;
+  }
+  function escalate() {
+    S.stage = S.stage >= 2 ? 3 : 2;
+    S.frustration = clamp(S.frustration + (S.stage === 3 ? 10 : 5));
+    S.lastVisitAt = Date.now(); S.pendingVisit = S.stage;
+  }
+  function nightEnded() {
+    if (S.snoozes === 0) { S.happiness = clamp(S.happiness + (S.complied ? 15 : 12)); S.frustration = clamp(S.frustration - 25); }
+    else if (S.snoozes === 1) { S.frustration = clamp(S.frustration - 5); }
+    const rec = { date: S.nightStartedAt || Date.now(), snoozes: S.snoozes, complied: S.complied, h: S.happiness, f: S.frustration };
+    const last = S.history[S.history.length - 1];
+    if (last && new Date(last.date).toDateString() === new Date(rec.date).toDateString()) S.history.pop();
+    S.history.push(rec); S.history = S.history.slice(-60);
+    S.stage = 0; S.snoozes = 0; S.complied = false; S.nightStartedAt = null; S.lastVisitAt = null; S.pendingVisit = null;
+  }
+  const sittingPose = () => S.frustration >= 50 ? 'sit-annoyed' : (S.happiness >= 60 && S.frustration < 35) ? 'sit-happy' : 'sit-neutral';
+  function caption() {
+    if (S.frustration >= 75) return 'she is really not talking to you right now 💢';
+    if (S.frustration >= 50) return "she's annoyed with you 💢";
+    if (S.happiness >= 80 && S.frustration < 20) return "she's very happy today ♡";
+    if (S.happiness >= 60 && S.frustration < 35) return "she's in a good mood ♡";
+    if (S.happiness < 35) return "she's a bit lonely...";
+    return "she's okay. a little tired.";
+  }
+  function statusLine() {
+    if (!S.enabled) return "she's not watching your bedtime yet. turn her on in settings.";
+    switch (S.stage) {
+      case 0: return `she'll come check on you at ${fmt(S.bedtime)}`;
+      case 1: return "she's up and waiting for you to turn the phone off";
+      case 2: return "she's back, and less patient this time";
+      case 3: return "she's really fed up. lights off.";
+      case 4: return `she's asleep. keep it down until ${fmt(S.wake)}`;
+    }
+  }
+  function nightSummary(n) {
+    if (n.snoozes === 0 && n.complied) return 'you said goodnight right away ♡';
+    if (n.snoozes === 0) return 'slept peacefully 🌙';
+    if (n.snoozes === 1) return 'woke her up once 😒';
+    return `woke her up ${n.snoozes}× 💢`;
+  }
+
+  // ---------- sketch character (SVG placeholder until sheets are uploaded) ----------
+  function face(cx, cy, r, expr) {
+    const ink = 'var(--ink)';
+    const eyeL = cx - r * 0.38, eyeR = cx + r * 0.38, ey = cy + r * 0.12;
+    let eyes = '', brows = '', mouth = '';
+    const dot = (x) => `<ellipse cx="${x}" cy="${ey}" rx="${r*0.1}" ry="${r*0.14}" fill="${ink}"/><circle cx="${x - r*0.03}" cy="${ey - r*0.05}" r="${r*0.03}" fill="#fff"/>`;
+    const lid = (x) => `<path d="M${x - r*0.12} ${ey} h${r*0.24}" stroke="${ink}" stroke-width="${r*0.09}" stroke-linecap="round"/><ellipse cx="${x}" cy="${ey + r*0.05}" rx="${r*0.1}" ry="${r*0.07}" fill="${ink}"/>`;
+    const closed = (x, up) => `<path d="M${x - r*0.13} ${ey} q${r*0.13} ${up ? -r*0.16 : r*0.16} ${r*0.26} 0" fill="none" stroke="${ink}" stroke-width="${r*0.07}" stroke-linecap="round"/>`;
+    switch (expr) {
+      case 'sleepy': eyes = lid(eyeL) + lid(eyeR); mouth = `<path d="M${cx - r*0.08} ${cy + r*0.5} h${r*0.16}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'talk': eyes = dot(eyeL) + dot(eyeR); mouth = `<ellipse cx="${cx}" cy="${cy + r*0.5}" rx="${r*0.09}" ry="${r*0.12}" fill="${ink}"/>`; break;
+      case 'annoyed': eyes = lid(eyeL) + lid(eyeR);
+        brows = `<path d="M${eyeL - r*0.15} ${ey - r*0.28} l${r*0.28} ${r*0.1}" stroke="${ink}" stroke-width="${r*0.06}" stroke-linecap="round"/><path d="M${eyeR + r*0.15} ${ey - r*0.28} l-${r*0.28} ${r*0.1}" stroke="${ink}" stroke-width="${r*0.06}" stroke-linecap="round"/>`;
+        mouth = `<path d="M${cx - r*0.1} ${cy + r*0.54} q${r*0.1} -${r*0.1} ${r*0.2} 0" fill="none" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'happy': eyes = closed(eyeL, true) + closed(eyeR, true); mouth = `<path d="M${cx - r*0.14} ${cy + r*0.45} q${r*0.14} ${r*0.2} ${r*0.28} 0 z" fill="${ink}"/>`; break;
+      case 'neutral': eyes = dot(eyeL) + dot(eyeR); mouth = `<path d="M${cx - r*0.07} ${cy + r*0.52} h${r*0.14}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'asleep': eyes = closed(eyeL, false) + closed(eyeR, false); mouth = `<path d="M${cx - r*0.06} ${cy + r*0.5} h${r*0.12}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+    }
+    const blush = `<ellipse cx="${eyeL - r*0.05}" cy="${cy + r*0.38}" rx="${r*0.16}" ry="${r*0.08}" fill="var(--blush)" opacity="0.45"/><ellipse cx="${eyeR + r*0.05}" cy="${cy + r*0.38}" rx="${r*0.16}" ry="${r*0.08}" fill="var(--blush)" opacity="0.45"/>`;
+    return brows + eyes + blush + mouth;
+  }
+  function head(cx, cy, r, expr) {
+    const hair = 'var(--hair)';
+    return `
+      <ellipse cx="${cx + r*0.02}" cy="${cy + r*0.25}" rx="${r*1.12}" ry="${r*0.95}" fill="${hair}"/>
+      <circle cx="${cx}" cy="${cy + r*0.05}" r="${r}" fill="var(--face)"/>
+      <path d="M${cx - r*1.05} ${cy + r*0.05} q${r*0.15} -${r*1.25} ${r*1.05} -${r*1.05} q${r*0.95} -${r*0.2} ${r*1.05} ${r*1.05}
+               q-${r*0.15} -${r*0.35} -${r*0.4} -${r*0.4} l-${r*0.08} ${r*0.45} l-${r*0.22} -${r*0.5} l-${r*0.18} ${r*0.5} l-${r*0.2} -${r*0.5} l-${r*0.18} ${r*0.5} l-${r*0.2} -${r*0.48} q-${r*0.3} ${r*0.1} -${r*0.4} ${r*0.5} z" fill="${hair}"/>
+      <path d="M${cx - r*0.3} ${cy - r*1.0} q${r*0.2} -${r*0.35} ${r*0.5} -${r*0.2}" fill="none" stroke="${hair}" stroke-width="${r*0.06}" stroke-linecap="round"/>
+      <path d="M${cx + r*0.1} ${cy - r*1.02} q${r*0.3} -${r*0.3} ${r*0.55} -${r*0.05}" fill="none" stroke="${hair}" stroke-width="${r*0.06}" stroke-linecap="round"/>
+      ${face(cx, cy, r, expr)}`;
+  }
+  const marks = (x, y, s) => `<path d="M${x} ${y} l${s*0.5} -${s} M${x + s*0.9} ${y + s*0.3} l${s*0.5} -${s}" stroke="var(--ink)" stroke-width="${s*0.16}" stroke-linecap="round"/>`;
+  const scribble = (x, y, s) => `<path d="M${x} ${y} c${s*0.4} -${s*0.6} ${s*0.9} ${s*0.4} ${s*0.3} ${s*0.3} c-${s*0.6} -${s*0.1} -${s*0.2} -${s*0.9} ${s*0.5} -${s*0.5} c${s*0.6} ${s*0.3} -${s*0.1} ${s*0.8} -${s*0.5} ${s*0.4} c-${s*0.5} -${s*0.4} ${s*0.3} -${s*0.9} ${s*0.6} -${s*0.3}" fill="none" stroke="var(--ink)" stroke-width="${s*0.09}" stroke-linecap="round"/>`;
+  const zzz = (x, y, s) => `<text x="${x}" y="${y}" font-family="var(--hand)" font-size="${s}" fill="var(--ink)">z</text><text x="${x + s*0.7}" y="${y - s*0.6}" font-family="var(--hand)" font-size="${s*1.2}" fill="var(--ink)">z</text><text x="${x + s*1.6}" y="${y - s*1.3}" font-family="var(--hand)" font-size="${s*1.4}" fill="var(--ink)">z</text>`;
+  function standing(pose) {
+    const ink = 'var(--ink)', W = 220, H = 330;
+    const cx = 110, cy = 92, r = 54;
+    let expr = 'sleepy', extra = '', arm = '', bodyT = '', door = '';
+    if (pose === 'pose-peek') { door = `<rect x="0" y="20" width="34" height="300" fill="var(--door)" stroke="${ink}" stroke-width="2"/><circle cx="28" cy="180" r="4" fill="${ink}"/>`; extra = marks(178, 60, 14); }
+    if (pose === 'pose-talk') { expr = 'talk'; extra = marks(184, 96, 14); arm = `<line x1="158" y1="152" x2="190" y2="108" stroke="${ink}" stroke-width="27" stroke-linecap="round"/><line x1="158" y1="152" x2="190" y2="108" stroke="#fff" stroke-width="22" stroke-linecap="round"/><circle cx="192" cy="104" r="9" fill="var(--face)" stroke="${ink}" stroke-width="2"/>`; }
+    if (pose === 'pose-frustrated') { expr = 'annoyed'; extra = scribble(150, 30, 26) + `<circle cx="176" cy="165" r="7" fill="none" stroke="${ink}" stroke-width="2"/><circle cx="184" cy="160" r="5" fill="none" stroke="${ink}" stroke-width="2"/>`; }
+    if (pose === 'pose-walk') { expr = 'asleep'; extra = zzz(160, 40, 18) + `<path d="M22 200 q-10 6 -6 16 M18 230 q-8 8 -2 16" stroke="${ink}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`; bodyT = 'transform="skewX(-6) translate(14 0)"'; }
+    const legs = pose === 'pose-walk'
+      ? `<rect x="76" y="188" width="26" height="80" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5" transform="rotate(14 89 188)"/><rect x="112" y="188" width="26" height="80" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5" transform="rotate(-12 125 188)"/>
+         <rect x="56" y="256" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/><rect x="124" y="258" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`
+      : `<rect x="80" y="188" width="26" height="82" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/><rect x="114" y="188" width="26" height="82" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/>
+         <rect x="72" y="262" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/><rect x="110" y="262" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="roommate ${pose}">
+      <ellipse cx="112" cy="286" rx="60" ry="8" fill="${ink}" opacity="0.12"/>
+      ${door}
+      <g ${bodyT}>
+        ${legs}
+        <rect x="58" y="126" width="104" height="82" rx="26" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+        <rect x="46" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+        ${arm || `<rect x="146" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`}
+        ${head(cx, cy, r, expr)}
+      </g>
+      ${extra}
+    </svg>`;
+  }
+  function sitting(pose) {
+    const ink = 'var(--ink)', W = 280, H = 260;
+    const cx = 140, cy = 78, r = 56;
+    const expr = pose === 'sit-happy' ? 'happy' : pose === 'sit-annoyed' ? 'annoyed' : 'neutral';
+    const extra = pose === 'sit-happy' ? `<path d="M226 92 c-6 -10 -20 -2 -12 8 l12 12 l12 -12 c8 -10 -6 -18 -12 -8z" fill="var(--blush)"/>` + marks(212, 50, 12)
+                : pose === 'sit-annoyed' ? scribble(212, 28, 24)
+                : `<text x="212" y="80" font-family="var(--hand)" font-size="26" fill="var(--soft)">...</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="roommate ${pose}">
+      <ellipse cx="140" cy="236" rx="90" ry="9" fill="${ink}" opacity="0.12"/>
+      <rect x="26" y="196" width="60" height="16" rx="3" fill="var(--blush-light)" stroke="${ink}" stroke-width="2"/>
+      <rect x="22" y="212" width="66" height="16" rx="3" fill="var(--mint)" stroke="${ink}" stroke-width="2"/>
+      <path d="M70 226 q70 -50 140 0 q10 12 -6 14 h-128 q-16 -2 -6 -14z" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/>
+      <rect x="66" y="218" width="36" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+      <rect x="178" y="218" width="36" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+      <rect x="86" y="118" width="108" height="86" rx="28" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+      <rect x="112" y="150" width="60" height="48" rx="4" fill="#6F8B8E" stroke="${ink}" stroke-width="2.5" transform="rotate(-6 142 174)"/>
+      <path d="M142 152 v46" stroke="#fff" stroke-width="2" opacity="0.6" transform="rotate(-6 142 174)"/>
+      <circle cx="112" cy="192" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
+      <circle cx="172" cy="188" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
+      ${head(cx, cy, r, expr)}
+      ${extra}
+    </svg>`;
+  }
+  const SKETCH = { 'pose-peek': () => standing('pose-peek'), 'pose-talk': () => standing('pose-talk'), 'pose-frustrated': () => standing('pose-frustrated'), 'pose-walk': () => standing('pose-walk'),
+                   'sit-happy': () => sitting('sit-happy'), 'sit-neutral': () => sitting('sit-neutral'), 'sit-annoyed': () => sitting('sit-annoyed') };
+
+  // ---------- artwork (uploaded sheets) ----------
+  let ART = {};
+  try { ART = JSON.parse(localStorage.getItem(ART_KEY) || '{}'); } catch { ART = {}; }
+  function poseHTML(name) {
+    if (ART[name]) return `<img src="${ART[name]}" alt="roommate ${name}">`;
+    return SKETCH[name]();
+  }
+  function artStatus() {
+    const n = Object.keys(ART).length;
+    $('art-status').textContent = n ? `using your artwork (${n}/7 poses)` : 'using the built-in sketch';
+    $('art-status').className = n ? 'ok' : '';
+  }
+  const STANDING = ['pose-peek', 'pose-talk', 'pose-frustrated', 'pose-walk'];
+  const SITTING = ['sit-happy', 'sit-neutral', 'sit-annoyed'];
+  const INK_T = 40, PAD = 24, MAX_H = 640;
+
+  function loadImage(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file); const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = rej; img.src = url;
+    });
+  }
+  async function sliceSheet(file, names) {
+    const img = await loadImage(file);
+    const W = img.naturalWidth, H = img.naturalHeight;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.drawImage(img, 0, 0);
+    const px = ctx.getImageData(0, 0, W, H).data;
+    // background: median of border pixels
+    const samples = [[], [], []];
+    const take = (x, y) => { const i = (y * W + x) * 4; samples[0].push(px[i]); samples[1].push(px[i+1]); samples[2].push(px[i+2]); };
+    for (let x = 0; x < W; x += 2) { take(x, 0); take(x, H - 1); }
+    for (let y = 0; y < H; y += 2) { take(0, y); take(W - 1, y); }
+    const bg = samples.map(a => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
+    const isInk = (x, y) => { const i = (y * W + x) * 4; return Math.abs(px[i] - bg[0]) > INK_T || Math.abs(px[i+1] - bg[1]) > INK_T || Math.abs(px[i+2] - bg[2]) > INK_T; };
+    // column projection → spans
+    const minGap = Math.max(12, Math.round(W / 64));
+    const cols = new Array(W).fill(false);
+    for (let x = 0; x < W; x++) for (let y = 0; y < H; y += 2) if (isInk(x, y)) { cols[x] = true; break; }
+    let spans = [], start = null, gap = 0;
+    for (let x = 0; x <= W + minGap; x++) {
+      const ink = x < W && cols[x];
+      if (ink) { if (start === null) start = x; gap = 0; }
+      else if (start !== null) { gap++; if (gap >= minGap) { spans.push([start, x - gap + 1]); start = null; gap = 0; } }
+    }
+    while (spans.length > names.length) {
+      let i = 0; for (let k = 1; k < spans.length; k++) if (spans[k][1] - spans[k][0] < spans[i][1] - spans[i][0]) i = k;
+      let j = i === 0 ? 1 : i === spans.length - 1 ? i - 1 : (spans[i][0] - spans[i-1][1] <= spans[i+1][0] - spans[i][1] ? i - 1 : i + 1);
+      const lo = Math.min(i, j), hi = Math.max(i, j);
+      spans.splice(lo, hi - lo + 1, [spans[lo][0], spans[hi][1]]);
+    }
+    if (spans.length < names.length) throw new Error(`found ${spans.length} figures, expected ${names.length}`);
+    const out = {};
+    names.forEach((name, k) => {
+      const [x0, x1] = spans[k];
+      let top = H, bot = 0;
+      for (let y = 0; y < H; y++) for (let x = x0; x < x1; x++) if (isInk(x, y)) { if (y < top) top = y; if (y > bot) bot = y; break; }
+      const L = Math.max(0, x0 - PAD), T = Math.max(0, top - PAD), R = Math.min(W, x1 + PAD), B = Math.min(H, bot + PAD);
+      const cw = R - L, ch = B - T;
+      const cc = document.createElement('canvas'); cc.width = cw; cc.height = ch;
+      const cctx = cc.getContext('2d'); cctx.drawImage(c, L, T, cw, ch, 0, 0, cw, ch);
+      const id = cctx.getImageData(0, 0, cw, ch); const d = id.data;
+      // flood fill background from the edges → transparent
+      const seen = new Uint8Array(cw * ch); const stack = [];
+      const bgLike = (i) => Math.abs(d[i*4] - bg[0]) <= INK_T && Math.abs(d[i*4+1] - bg[1]) <= INK_T && Math.abs(d[i*4+2] - bg[2]) <= INK_T;
+      for (let x = 0; x < cw; x++) { stack.push(x, (ch - 1) * cw + x); }
+      for (let y = 0; y < ch; y++) { stack.push(y * cw, y * cw + cw - 1); }
+      while (stack.length) {
+        const i = stack.pop(); if (seen[i] || !bgLike(i)) continue;
+        seen[i] = 1; d[i*4+3] = 0;
+        const x = i % cw, y = (i - x) / cw;
+        if (x > 0) stack.push(i - 1); if (x < cw - 1) stack.push(i + 1);
+        if (y > 0) stack.push(i - cw); if (y < ch - 1) stack.push(i + cw);
+      }
+      cctx.putImageData(id, 0, 0);
+      const s = Math.min(1, MAX_H / ch);
+      const oc = document.createElement('canvas'); oc.width = Math.round(cw * s); oc.height = Math.round(ch * s);
+      oc.getContext('2d').drawImage(cc, 0, 0, oc.width, oc.height);
+      out[name] = oc.toDataURL('image/png');
+    });
+    return out;
+  }
+  async function handleSheet(input, names) {
+    const file = input.files && input.files[0]; if (!file) return;
+    $('art-status').textContent = 'cutting her out…'; $('art-status').className = '';
+    try {
+      const poses = await sliceSheet(file, names);
+      Object.assign(ART, poses);
+      try { localStorage.setItem(ART_KEY, JSON.stringify(ART)); }
+      catch { toast("saved for this visit only – the browser's storage is full"); }
+      artStatus(); render();
+    } catch (e) {
+      $('art-status').textContent = `couldn't slice that sheet: ${e.message}`; $('art-status').className = 'warn';
+    }
+  }
+
+  // ---------- font upload ----------
+  async function applyFont(dataUrl, label) {
+    try {
+      const f = new FontFace('RoommateCustom', `url(${dataUrl})`);
+      await f.load(); document.fonts.add(f);
+      document.documentElement.style.setProperty('--hand', '"RoommateCustom", "Patrick Hand", cursive');
+      $('font-status').textContent = `using ${label}`; $('font-status').className = 'ok';
+    } catch { $('font-status').textContent = "couldn't load that font file"; $('font-status').className = 'warn'; }
+  }
+  try { const saved = JSON.parse(localStorage.getItem(FONT_KEY) || 'null'); if (saved) applyFont(saved.data, saved.name); } catch {}
+
+  // ---------- render ----------
+  function render() {
+    $('portrait').innerHTML = poseHTML(S.stage === 4 ? 'sit-happy' : sittingPose());
+    $('caption').textContent = caption();
+    $('status').textContent = statusLine();
+    $('hap-val').textContent = S.happiness; $('hap-fill').style.width = S.happiness + '%';
+    $('fru-val').textContent = S.frustration; $('fru-fill').style.width = S.frustration + '%';
+    $('bed-str').textContent = fmt(S.bedtime); $('wake-str').textContent = fmt(S.wake);
+    $('moon').className = 'moon' + (S.enabled ? ' on' : ''); $('moon').textContent = S.enabled ? '☾' : '☾';
+    const pill = $('pill');
+    pill.textContent = !S.enabled ? 'off' : S.stage === 0 ? 'daytime' : S.stage === 4 ? 'asleep' : S.stage === 1 ? 'awake' : S.stage === 2 ? 'frustrated' : 'fuming';
+    pill.className = 'stage-pill ' + (!S.enabled ? 'off' : (S.stage >= 1 && S.stage <= 3) ? 'awake' : '');
+    const nights = $('nights');
+    if (!S.history.length) nights.innerHTML = '<p class="empty">no nights yet. turn her on in settings and she\'ll start keeping track.</p>';
+    else nights.innerHTML = S.history.slice().reverse().slice(0, 7).map(n =>
+      `<div class="night"><span class="d">${new Date(n.date).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })}</span><span>${nightSummary(n)}</span></div>`).join('');
+    $('enabled').checked = S.enabled; $('bedtime').value = S.bedtime; $('wake').value = S.wake; $('fast').checked = S.fast;
+    $('enabled-hint').textContent = S.fast
+      ? 'web demo, fast mode: she comes back every 20 seconds until you say goodnight.'
+      : 'web demo: nothing gets blocked. she shows up on this page at lights-off, and again every 15 minutes until you say goodnight.';
+  }
+
+  // ---------- the visit ----------
+  const V = { open: false, preview: false, stage: 1, lines: [], idx: 0, timer: null, timeouts: [] };
+  const later = (ms, fn) => { const t = setTimeout(fn, ms); V.timeouts.push(t); return t; };
+  function clearTimers() { V.timeouts.forEach(clearTimeout); V.timeouts = []; if (V.timer) clearInterval(V.timer); V.timer = null; }
+  function setPose(name) {
+    const el = $('char'); const child = el.firstElementChild;
+    if (child) { child.style.opacity = '0'; }
+    later(160, () => { el.innerHTML = poseHTML(name); el.firstElementChild.style.opacity = '0'; requestAnimationFrame(() => { el.firstElementChild.style.opacity = '1'; }); });
+  }
+  function showBubble(text, done) {
+    const b = $('bubble'); b.classList.remove('done'); $('ghost').textContent = text; $('typed').textContent = '';
+    b.classList.add('show');
+    let i = 0; if (V.timer) clearInterval(V.timer);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    V.timer = setInterval(() => {
+      i++; $('typed').textContent = text.slice(0, i);
+      if (i >= text.length) { clearInterval(V.timer); V.timer = null; b.classList.add('done'); done && done(); }
+    }, reduce ? 4 : 40);
+  }
+  const hideBubble = () => $('bubble').classList.remove('show');
+
+  function openVisit(stage, preview) {
+    clearTimers();
+    V.open = true; V.preview = preview; V.stage = stage || 1; V.idx = 0;
+    V.lines = LINES[V.stage](fmt(S.bedtime));
+    $('vtitle').textContent = preview ? 'preview' : TITLES[V.stage];
+    $('gone').classList.remove('show'); hideBubble();
+    $('actions').classList.add('hidden');
+    const c = $('char'); c.className = 'char'; c.innerHTML = poseHTML(V.stage === 3 ? 'pose-frustrated' : 'pose-peek');
+    $('visit').classList.add('open'); document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('in')));
+    later(1300, () => {
+      if (V.stage !== 3) setPose('pose-talk');
+      if (V.stage !== 4) $('actions').classList.remove('hidden');
+      sayNext();
+    });
+  }
+  function sayNext() {
+    showBubble(V.lines[V.idx], () => later(V.phase === 'thanks' ? 900 : 1200, () => {
+      V.idx++;
+      if (V.idx < V.lines.length) sayNext();
+      else if (V.phase === 'thanks') leave('she went back to bed. sleep well ♡');
+      else if (V.stage === 4) leave("she's asleep. you should be too.");
+      else { hideBubble(); setPose('pose-frustrated'); later(1600, () => leave('she went back to her room, sighing.')); }
+    }));
+  }
+  function leave(text) {
+    $('actions').classList.add('hidden'); hideBubble(); $('gone-text').textContent = text;
+    setPose('pose-walk');
+    later(300, () => $('char').classList.add('out'));
+    later(1800, () => $('gone').classList.add('show'));
+  }
+  function closeVisit() {
+    clearTimers(); V.open = false; V.phase = null;
+    $('visit').classList.remove('open'); document.body.style.overflow = '';
+    render();
+  }
+  $('btn-vclose').onclick = closeVisit;
+  $('btn-gone-close').onclick = closeVisit;
+  $('btn-off').onclick = () => {
+    if (!V.preview) { complied(); save(); }
+    V.phase = 'thanks'; V.lines = THANKS; V.idx = 0;
+    $('actions').classList.add('hidden'); setPose('pose-talk'); later(200, sayNext);
+  };
+  $('btn-notyet').onclick = () => {
+    if (!V.preview) { snoozed(); save(); }
+    $('actions').classList.add('hidden'); hideBubble(); setPose('pose-frustrated');
+    later(1000, () => leave(V.preview ? "she left. (for real she'd be back in 15 minutes.)" : `she left. she'll be back in ${S.fast ? '20 seconds' : '15 minutes'}, and not happy about it.`));
+  };
+  document.querySelectorAll('[data-preview]').forEach(b => b.onclick = () => openVisit(Number(b.dataset.preview), true));
+
+  // ---------- the clock (stands in for the DeviceActivity extension) ----------
+  function notify(stage) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try { new Notification(TITLES[stage], { body: LINES[stage](fmt(S.bedtime)).join(' '), tag: 'roommate' }); } catch {}
+  }
+  function tick() {
+    if (!S.enabled) return;
+    let changed = false;
+    if (isBedtime()) {
+      if (S.stage === 0) { nightStarted(); changed = true; notify(1); }
+      else if (!S.complied && S.stage >= 1 && S.stage <= 3 && !V.open && Date.now() - (S.lastVisitAt || 0) >= escalateMs()) {
+        escalate(); changed = true; notify(S.stage);
+      }
+    } else if (S.nightStartedAt) { nightEnded(); changed = true; }
+    if (changed) save();
+    if (S.pendingVisit && !V.open && document.visibilityState === 'visible') {
+      const st = S.pendingVisit; S.pendingVisit = null; save(); render(); openVisit(st, false);
+    } else if (changed) render();
+  }
+  setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') tick(); });
+
+  // ---------- settings ----------
+  const openSheet = () => { $('sheet').classList.add('open'); $('sheet-bg').classList.add('open'); };
+  const closeSheet = () => { $('sheet').classList.remove('open'); $('sheet-bg').classList.remove('open'); };
+  $('btn-settings').onclick = openSheet; $('btn-done').onclick = closeSheet; $('sheet-bg').onclick = closeSheet;
+  $('sched').onclick = openSheet; $('sched').onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(); } };
+  $('enabled').onchange = (e) => {
+    S.enabled = e.target.checked;
+    if (!S.enabled) { S.stage = 0; S.pendingVisit = null; S.nightStartedAt = null; }
+    save(); render(); if (S.enabled) tick();
+  };
+  $('bedtime').onchange = (e) => { S.bedtime = e.target.value || '23:00'; save(); render(); };
+  $('wake').onchange = (e) => { S.wake = e.target.value || '07:00'; save(); render(); };
+  $('fast').onchange = (e) => { S.fast = e.target.checked; save(); render(); };
+  $('btn-bedtime-now').onclick = () => {
+    const d = new Date(); S.bedtime = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const w = new Date(d.getTime() + 8 * 3600 * 1000); S.wake = `${String(w.getHours()).padStart(2, '0')}:${String(w.getMinutes()).padStart(2, '0')}`;
+    if (!S.enabled) S.enabled = true;
+    save(); render(); closeSheet(); toast(`lights off at ${fmt(S.bedtime)}. here she comes.`); later(400, tick);
+  };
+  $('btn-morning').onclick = () => {
+    if (!S.nightStartedAt) { toast("it's not night yet – nothing to tally"); return; }
+    nightEnded();
+    const d = new Date(); const w = new Date(d.getTime() - 60 * 1000);
+    S.wake = `${String(w.getHours()).padStart(2, '0')}:${String(w.getMinutes()).padStart(2, '0')}`;
+    if (toMin(S.bedtime) === toMin(S.wake)) S.bedtime = `${String((w.getHours() + 12) % 24).padStart(2, '0')}:${String(w.getMinutes()).padStart(2, '0')}`;
+    save(); render(); closeSheet(); toast('morning. the night is in her log.');
+  };
+  $('btn-notif').onclick = async () => {
+    if (!('Notification' in window)) { $('notif-hint').textContent = 'this browser has no notifications. on iPhone, add the page to your home screen first.'; return; }
+    const p = await Notification.requestPermission();
+    $('notif-hint').textContent = p === 'granted' ? "notifications on. if this page is in the background when she comes out, she'll knock." : 'notifications are off for this page.';
+  };
+  $('sheet-standing').onchange = (e) => handleSheet(e.target, STANDING);
+  $('sheet-sitting').onchange = (e) => handleSheet(e.target, SITTING);
+  $('btn-art-reset').onclick = () => { ART = {}; localStorage.removeItem(ART_KEY); artStatus(); render(); };
+  $('font-file').onchange = (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { applyFont(r.result, f.name); try { localStorage.setItem(FONT_KEY, JSON.stringify({ name: f.name, data: r.result })); } catch {} };
+    r.readAsDataURL(f);
+  };
+  $('btn-reset').onclick = () => {
+    if (!confirm('reset her mood? happiness, frustration and the night log go back to the start.')) return;
+    const keep = { bedtime: S.bedtime, wake: S.wake, enabled: S.enabled, fast: S.fast };
+    S = Object.assign(defaults(), keep); save(); render(); toast('she forgot everything. clean slate.');
+  };
+
+  let toastT;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
+
+  // ---------- boot ----------
+  artStatus(); render(); tick();
+})();
+</script>
