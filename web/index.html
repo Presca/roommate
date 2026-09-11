@@ -261,8 +261,69 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ---------- character motion ----------
+     .live   = ambient: breathing, blinking, floating marks
+     .walking, .talking, .shake = states set by the visit choreography
+     Sketch parts are SVG groups; uploaded artwork gets the wrapper-level motion. */
+  .live svg .body { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
+  .live svg .head { transform-box: fill-box; transform-origin: 50% 88%; animation: sway 4.2s ease-in-out infinite; }
+  .live svg .eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 4.6s infinite; }
+  .live svg .mark { transform-box: fill-box; transform-origin: 50% 100%; animation: pop 0.5s cubic-bezier(.3,1.6,.5,1) both, jitter 1.6s 0.5s ease-in-out infinite; }
+  .live svg .zz { transform-box: fill-box; animation: floatz 2.6s ease-out infinite; opacity: 0; }
+  .live svg .zz:nth-child(2) { animation-delay: 0.7s; }
+  .live svg .zz:nth-child(3) { animation-delay: 1.4s; }
+  .live svg .scribble { transform-box: fill-box; transform-origin: 50% 50%; animation: wobble 0.55s ease-in-out infinite alternate; }
+  .live svg .puff { transform-box: fill-box; transform-origin: 0% 50%; animation: puff 1.8s ease-out infinite; }
+  .live svg .heart { transform-box: fill-box; transform-origin: 50% 50%; animation: beat 1.3s ease-in-out infinite; }
+  .live svg .dot { animation: dots 1.8s steps(1) infinite; opacity: 0.25; }
+  .live svg .dot:nth-child(2) { animation-delay: 0.3s; }
+  .live svg .dot:nth-child(3) { animation-delay: 0.6s; }
+  .live svg .book { transform-box: fill-box; transform-origin: 50% 100%; animation: pageturn 5s ease-in-out infinite; }
+  .live img { transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
+
+  .walking svg .body { animation: bob 0.42s ease-in-out infinite; }
+  .walking svg .leg-l { transform-box: fill-box; transform-origin: 50% 4%; animation: swingL 0.42s ease-in-out infinite; }
+  .walking svg .leg-r { transform-box: fill-box; transform-origin: 50% 4%; animation: swingR 0.42s ease-in-out infinite; }
+  .walking svg .arm { transform-box: fill-box; transform-origin: 50% 8%; animation: swingR 0.42s ease-in-out infinite; }
+  .walking svg .head { animation: walknod 0.42s ease-in-out infinite; }
+  .walking img { animation: bobimg 0.42s ease-in-out infinite; }
+
+  .talking svg .mouth { transform-box: fill-box; transform-origin: 50% 50%; animation: chew 0.2s ease-in-out infinite alternate; }
+  .talking svg .head { animation: talknod 0.55s ease-in-out infinite; }
+  .talking svg .arm { transform-box: fill-box; transform-origin: 8% 92%; animation: wave 0.8s ease-in-out infinite alternate; }
+  .talking img { animation: nodimg 0.55s ease-in-out infinite; }
+
+  .shake svg, .shake img { animation: shake 0.5s ease-in-out; }
+  .shake svg .head { animation: tremble 0.09s linear infinite; }
+  .hop svg, .hop img { animation: hop 0.6s cubic-bezier(.3,1.4,.5,1); }
+
+  @keyframes breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.025) scaleX(1.008); } }
+  @keyframes sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2.5deg); } }
+  @keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.08); } 97% { transform: scaleY(1); } }
+  @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes jitter { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(1.5px, -2px) rotate(6deg); } }
+  @keyframes floatz { 0% { transform: translateY(4px); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-22px); opacity: 0; } }
+  @keyframes wobble { from { transform: rotate(-10deg) scale(0.95); } to { transform: rotate(10deg) scale(1.05); } }
+  @keyframes puff { 0% { transform: scale(0.4); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1.3) translateX(8px); opacity: 0; } }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.25); } 45% { transform: scale(1); } 60% { transform: scale(1.15); } }
+  @keyframes dots { 0%, 100% { opacity: 0.25; } 33% { opacity: 1; } }
+  @keyframes pageturn { 0%, 80%, 100% { transform: rotate(-6deg); } 88% { transform: rotate(-2deg) scaleX(0.9); } 94% { transform: rotate(-7deg); } }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-7px) rotate(1.5deg); } }
+  @keyframes bobimg { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+  @keyframes swingL { 0%, 100% { transform: rotate(12deg); } 50% { transform: rotate(-12deg); } }
+  @keyframes swingR { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+  @keyframes walknod { 0%, 100% { transform: rotate(-3deg) translateY(1px); } 50% { transform: rotate(3deg) translateY(-1px); } }
+  @keyframes chew { from { transform: scaleY(0.35); } to { transform: scaleY(1.1); } }
+  @keyframes talknod { 0%, 100% { transform: rotate(-1deg) translateY(0); } 50% { transform: rotate(2deg) translateY(2px); } }
+  @keyframes wave { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }
+  @keyframes nodimg { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(3px) rotate(1deg); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px) rotate(-2deg); } 40% { transform: translateX(6px) rotate(2deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+  @keyframes tremble { 0% { transform: translate(0.6px, 0) rotate(0.6deg); } 100% { transform: translate(-0.6px, 0.4px) rotate(-0.6deg); } }
+  @keyframes hop { 0%, 100% { transform: translateY(0) scaleX(1); } 30% { transform: translateY(-18px) scaleX(0.96); } 60% { transform: translateY(0) scaleX(1.04); } 75% { transform: scaleY(0.96); } }
+
   @media (prefers-reduced-motion: reduce) {
     .char, .char.out, .bubble, .bar .fill, .sheet { transition: none; }
+    .live svg *, .live img, .walking svg *, .walking img, .talking svg *, .talking img, .shake svg, .shake img, .hop svg, .hop img { animation: none !important; opacity: 1; }
   }
 </style>
 
@@ -275,7 +336,7 @@
   </header>
 
   <section class="card hero">
-    <div class="portrait" id="portrait"></div>
+    <div class="portrait live" id="portrait" title="tap her"></div>
     <p class="caption" id="caption">she's in a good mood ♡</p>
     <p class="status" id="status"></p>
     <span class="stage-pill off" id="pill">off</span>
@@ -496,6 +557,8 @@
   }
 
   // ---------- sketch character (SVG placeholder until sheets are uploaded) ----------
+  // Parts carry classes (.body .head .eyes .mouth .leg-l .leg-r .arm .mark .zz .scribble .puff .heart .dot .book)
+  // that the CSS above animates.
   function face(cx, cy, r, expr) {
     const ink = 'var(--ink)';
     const eyeL = cx - r * 0.38, eyeR = cx + r * 0.38, ey = cy + r * 0.12;
@@ -504,54 +567,54 @@
     const lid = (x) => `<path d="M${x - r*0.12} ${ey} h${r*0.24}" stroke="${ink}" stroke-width="${r*0.09}" stroke-linecap="round"/><ellipse cx="${x}" cy="${ey + r*0.05}" rx="${r*0.1}" ry="${r*0.07}" fill="${ink}"/>`;
     const closed = (x, up) => `<path d="M${x - r*0.13} ${ey} q${r*0.13} ${up ? -r*0.16 : r*0.16} ${r*0.26} 0" fill="none" stroke="${ink}" stroke-width="${r*0.07}" stroke-linecap="round"/>`;
     switch (expr) {
-      case 'sleepy': eyes = lid(eyeL) + lid(eyeR); mouth = `<path d="M${cx - r*0.08} ${cy + r*0.5} h${r*0.16}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
-      case 'talk': eyes = dot(eyeL) + dot(eyeR); mouth = `<ellipse cx="${cx}" cy="${cy + r*0.5}" rx="${r*0.09}" ry="${r*0.12}" fill="${ink}"/>`; break;
+      case 'sleepy': eyes = lid(eyeL) + lid(eyeR); mouth = `<path class="mouth" d="M${cx - r*0.08} ${cy + r*0.5} h${r*0.16}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'talk': eyes = `<g class="eyes">${dot(eyeL)}${dot(eyeR)}</g>`; mouth = `<ellipse class="mouth" cx="${cx}" cy="${cy + r*0.5}" rx="${r*0.09}" ry="${r*0.12}" fill="${ink}"/>`; break;
       case 'annoyed': eyes = lid(eyeL) + lid(eyeR);
         brows = `<path d="M${eyeL - r*0.15} ${ey - r*0.28} l${r*0.28} ${r*0.1}" stroke="${ink}" stroke-width="${r*0.06}" stroke-linecap="round"/><path d="M${eyeR + r*0.15} ${ey - r*0.28} l-${r*0.28} ${r*0.1}" stroke="${ink}" stroke-width="${r*0.06}" stroke-linecap="round"/>`;
-        mouth = `<path d="M${cx - r*0.1} ${cy + r*0.54} q${r*0.1} -${r*0.1} ${r*0.2} 0" fill="none" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
-      case 'happy': eyes = closed(eyeL, true) + closed(eyeR, true); mouth = `<path d="M${cx - r*0.14} ${cy + r*0.45} q${r*0.14} ${r*0.2} ${r*0.28} 0 z" fill="${ink}"/>`; break;
-      case 'neutral': eyes = dot(eyeL) + dot(eyeR); mouth = `<path d="M${cx - r*0.07} ${cy + r*0.52} h${r*0.14}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
-      case 'asleep': eyes = closed(eyeL, false) + closed(eyeR, false); mouth = `<path d="M${cx - r*0.06} ${cy + r*0.5} h${r*0.12}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+        mouth = `<path class="mouth" d="M${cx - r*0.1} ${cy + r*0.54} q${r*0.1} -${r*0.1} ${r*0.2} 0" fill="none" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'happy': eyes = closed(eyeL, true) + closed(eyeR, true); mouth = `<path class="mouth" d="M${cx - r*0.14} ${cy + r*0.45} q${r*0.14} ${r*0.2} ${r*0.28} 0 z" fill="${ink}"/>`; break;
+      case 'neutral': eyes = `<g class="eyes">${dot(eyeL)}${dot(eyeR)}</g>`; mouth = `<path class="mouth" d="M${cx - r*0.07} ${cy + r*0.52} h${r*0.14}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
+      case 'asleep': eyes = closed(eyeL, false) + closed(eyeR, false); mouth = `<path class="mouth" d="M${cx - r*0.06} ${cy + r*0.5} h${r*0.12}" stroke="${ink}" stroke-width="${r*0.05}" stroke-linecap="round"/>`; break;
     }
     const blush = `<ellipse cx="${eyeL - r*0.05}" cy="${cy + r*0.38}" rx="${r*0.16}" ry="${r*0.08}" fill="var(--blush)" opacity="0.45"/><ellipse cx="${eyeR + r*0.05}" cy="${cy + r*0.38}" rx="${r*0.16}" ry="${r*0.08}" fill="var(--blush)" opacity="0.45"/>`;
     return brows + eyes + blush + mouth;
   }
   function head(cx, cy, r, expr) {
     const hair = 'var(--hair)';
-    return `
+    return `<g class="head">
       <ellipse cx="${cx + r*0.02}" cy="${cy + r*0.25}" rx="${r*1.12}" ry="${r*0.95}" fill="${hair}"/>
       <circle cx="${cx}" cy="${cy + r*0.05}" r="${r}" fill="var(--face)"/>
       <path d="M${cx - r*1.05} ${cy + r*0.05} q${r*0.15} -${r*1.25} ${r*1.05} -${r*1.05} q${r*0.95} -${r*0.2} ${r*1.05} ${r*1.05}
                q-${r*0.15} -${r*0.35} -${r*0.4} -${r*0.4} l-${r*0.08} ${r*0.45} l-${r*0.22} -${r*0.5} l-${r*0.18} ${r*0.5} l-${r*0.2} -${r*0.5} l-${r*0.18} ${r*0.5} l-${r*0.2} -${r*0.48} q-${r*0.3} ${r*0.1} -${r*0.4} ${r*0.5} z" fill="${hair}"/>
       <path d="M${cx - r*0.3} ${cy - r*1.0} q${r*0.2} -${r*0.35} ${r*0.5} -${r*0.2}" fill="none" stroke="${hair}" stroke-width="${r*0.06}" stroke-linecap="round"/>
       <path d="M${cx + r*0.1} ${cy - r*1.02} q${r*0.3} -${r*0.3} ${r*0.55} -${r*0.05}" fill="none" stroke="${hair}" stroke-width="${r*0.06}" stroke-linecap="round"/>
-      ${face(cx, cy, r, expr)}`;
+      ${face(cx, cy, r, expr)}
+    </g>`;
   }
-  const marks = (x, y, s) => `<path d="M${x} ${y} l${s*0.5} -${s} M${x + s*0.9} ${y + s*0.3} l${s*0.5} -${s}" stroke="var(--ink)" stroke-width="${s*0.16}" stroke-linecap="round"/>`;
-  const scribble = (x, y, s) => `<path d="M${x} ${y} c${s*0.4} -${s*0.6} ${s*0.9} ${s*0.4} ${s*0.3} ${s*0.3} c-${s*0.6} -${s*0.1} -${s*0.2} -${s*0.9} ${s*0.5} -${s*0.5} c${s*0.6} ${s*0.3} -${s*0.1} ${s*0.8} -${s*0.5} ${s*0.4} c-${s*0.5} -${s*0.4} ${s*0.3} -${s*0.9} ${s*0.6} -${s*0.3}" fill="none" stroke="var(--ink)" stroke-width="${s*0.09}" stroke-linecap="round"/>`;
-  const zzz = (x, y, s) => `<text x="${x}" y="${y}" font-family="var(--hand)" font-size="${s}" fill="var(--ink)">z</text><text x="${x + s*0.7}" y="${y - s*0.6}" font-family="var(--hand)" font-size="${s*1.2}" fill="var(--ink)">z</text><text x="${x + s*1.6}" y="${y - s*1.3}" font-family="var(--hand)" font-size="${s*1.4}" fill="var(--ink)">z</text>`;
+  const marks = (x, y, s) => `<path class="mark" d="M${x} ${y} l${s*0.5} -${s} M${x + s*0.9} ${y + s*0.3} l${s*0.5} -${s}" stroke="var(--ink)" stroke-width="${s*0.16}" stroke-linecap="round"/>`;
+  const scribble = (x, y, s) => `<path class="scribble" d="M${x} ${y} c${s*0.4} -${s*0.6} ${s*0.9} ${s*0.4} ${s*0.3} ${s*0.3} c-${s*0.6} -${s*0.1} -${s*0.2} -${s*0.9} ${s*0.5} -${s*0.5} c${s*0.6} ${s*0.3} -${s*0.1} ${s*0.8} -${s*0.5} ${s*0.4} c-${s*0.5} -${s*0.4} ${s*0.3} -${s*0.9} ${s*0.6} -${s*0.3}" fill="none" stroke="var(--ink)" stroke-width="${s*0.09}" stroke-linecap="round"/>`;
+  const zzz = (x, y, s) => `<g><text class="zz" x="${x}" y="${y}" font-family="var(--hand)" font-size="${s}" fill="var(--ink)">z</text><text class="zz" x="${x + s*0.7}" y="${y - s*0.6}" font-family="var(--hand)" font-size="${s*1.2}" fill="var(--ink)">z</text><text class="zz" x="${x + s*1.6}" y="${y - s*1.3}" font-family="var(--hand)" font-size="${s*1.4}" fill="var(--ink)">z</text></g>`;
+  const leg = (cls, x, ink) => `<g class="${cls}"><rect x="${x}" y="188" width="26" height="82" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/><rect x="${x - 8}" y="262" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/></g>`;
   function standing(pose) {
     const ink = 'var(--ink)', W = 220, H = 330;
     const cx = 110, cy = 92, r = 54;
     let expr = 'sleepy', extra = '', arm = '', bodyT = '', door = '';
     if (pose === 'pose-peek') { door = `<rect x="0" y="20" width="34" height="300" fill="var(--door)" stroke="${ink}" stroke-width="2"/><circle cx="28" cy="180" r="4" fill="${ink}"/>`; extra = marks(178, 60, 14); }
-    if (pose === 'pose-talk') { expr = 'talk'; extra = marks(184, 96, 14); arm = `<line x1="158" y1="152" x2="190" y2="108" stroke="${ink}" stroke-width="27" stroke-linecap="round"/><line x1="158" y1="152" x2="190" y2="108" stroke="#fff" stroke-width="22" stroke-linecap="round"/><circle cx="192" cy="104" r="9" fill="var(--face)" stroke="${ink}" stroke-width="2"/>`; }
-    if (pose === 'pose-frustrated') { expr = 'annoyed'; extra = scribble(150, 30, 26) + `<circle cx="176" cy="165" r="7" fill="none" stroke="${ink}" stroke-width="2"/><circle cx="184" cy="160" r="5" fill="none" stroke="${ink}" stroke-width="2"/>`; }
-    if (pose === 'pose-walk') { expr = 'asleep'; extra = zzz(160, 40, 18) + `<path d="M22 200 q-10 6 -6 16 M18 230 q-8 8 -2 16" stroke="${ink}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`; bodyT = 'transform="skewX(-6) translate(14 0)"'; }
-    const legs = pose === 'pose-walk'
-      ? `<rect x="76" y="188" width="26" height="80" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5" transform="rotate(14 89 188)"/><rect x="112" y="188" width="26" height="80" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5" transform="rotate(-12 125 188)"/>
-         <rect x="56" y="256" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/><rect x="124" y="258" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`
-      : `<rect x="80" y="188" width="26" height="82" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/><rect x="114" y="188" width="26" height="82" rx="12" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/>
-         <rect x="72" y="262" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/><rect x="110" y="262" width="40" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`;
+    if (pose === 'pose-talk') { expr = 'talk'; extra = marks(184, 96, 14); arm = `<g class="arm"><line x1="158" y1="152" x2="190" y2="108" stroke="${ink}" stroke-width="27" stroke-linecap="round"/><line x1="158" y1="152" x2="190" y2="108" stroke="#fff" stroke-width="22" stroke-linecap="round"/><circle cx="192" cy="104" r="9" fill="var(--face)" stroke="${ink}" stroke-width="2"/></g>`; }
+    if (pose === 'pose-frustrated') { expr = 'annoyed'; extra = scribble(150, 30, 26) + `<g class="puff"><circle cx="176" cy="165" r="7" fill="none" stroke="${ink}" stroke-width="2"/><circle cx="184" cy="160" r="5" fill="none" stroke="${ink}" stroke-width="2"/></g>`; }
+    if (pose === 'pose-walk') { expr = 'asleep'; extra = zzz(160, 40, 18); bodyT = 'transform="skewX(-6) translate(14 0)"'; }
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="roommate ${pose}">
       <ellipse cx="112" cy="286" rx="60" ry="8" fill="${ink}" opacity="0.12"/>
       ${door}
       <g ${bodyT}>
-        ${legs}
-        <rect x="58" y="126" width="104" height="82" rx="26" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
-        <rect x="46" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
-        ${arm || `<rect x="146" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`}
-        ${head(cx, cy, r, expr)}
+        ${leg('leg leg-l', 80, ink)}
+        ${leg('leg leg-r', 114, ink)}
+        <g class="body">
+          <rect x="58" y="126" width="104" height="82" rx="26" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+          <rect x="46" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+          ${arm || `<rect class="arm" x="146" y="134" width="28" height="70" rx="14" fill="#fff" stroke="${ink}" stroke-width="2.5"/>`}
+          ${head(cx, cy, r, expr)}
+        </g>
       </g>
       ${extra}
     </svg>`;
@@ -560,9 +623,9 @@
     const ink = 'var(--ink)', W = 280, H = 260;
     const cx = 140, cy = 78, r = 56;
     const expr = pose === 'sit-happy' ? 'happy' : pose === 'sit-annoyed' ? 'annoyed' : 'neutral';
-    const extra = pose === 'sit-happy' ? `<path d="M226 92 c-6 -10 -20 -2 -12 8 l12 12 l12 -12 c8 -10 -6 -18 -12 -8z" fill="var(--blush)"/>` + marks(212, 50, 12)
+    const extra = pose === 'sit-happy' ? `<path class="heart" d="M226 92 c-6 -10 -20 -2 -12 8 l12 12 l12 -12 c8 -10 -6 -18 -12 -8z" fill="var(--blush)"/>` + marks(212, 50, 12)
                 : pose === 'sit-annoyed' ? scribble(212, 28, 24)
-                : `<text x="212" y="80" font-family="var(--hand)" font-size="26" fill="var(--soft)">...</text>`;
+                : `<g><circle class="dot" cx="212" cy="76" r="3.2" fill="var(--soft)"/><circle class="dot" cx="224" cy="76" r="3.2" fill="var(--soft)"/><circle class="dot" cx="236" cy="76" r="3.2" fill="var(--soft)"/></g>`;
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="roommate ${pose}">
       <ellipse cx="140" cy="236" rx="90" ry="9" fill="${ink}" opacity="0.12"/>
       <rect x="26" y="196" width="60" height="16" rx="3" fill="var(--blush-light)" stroke="${ink}" stroke-width="2"/>
@@ -570,12 +633,16 @@
       <path d="M70 226 q70 -50 140 0 q10 12 -6 14 h-128 q-16 -2 -6 -14z" fill="var(--denim)" stroke="${ink}" stroke-width="2.5"/>
       <rect x="66" y="218" width="36" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
       <rect x="178" y="218" width="36" height="18" rx="9" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
-      <rect x="86" y="118" width="108" height="86" rx="28" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
-      <rect x="112" y="150" width="60" height="48" rx="4" fill="#6F8B8E" stroke="${ink}" stroke-width="2.5" transform="rotate(-6 142 174)"/>
-      <path d="M142 152 v46" stroke="#fff" stroke-width="2" opacity="0.6" transform="rotate(-6 142 174)"/>
-      <circle cx="112" cy="192" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
-      <circle cx="172" cy="188" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
-      ${head(cx, cy, r, expr)}
+      <g class="body">
+        <rect x="86" y="118" width="108" height="86" rx="28" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+        <g class="book" transform="rotate(-6 142 174)">
+          <rect x="112" y="150" width="60" height="48" rx="4" fill="#6F8B8E" stroke="${ink}" stroke-width="2.5"/>
+          <path d="M142 152 v46" stroke="#fff" stroke-width="2" opacity="0.6"/>
+        </g>
+        <circle cx="112" cy="192" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
+        <circle cx="172" cy="188" r="8" fill="var(--face)" stroke="${ink}" stroke-width="2"/>
+        ${head(cx, cy, r, expr)}
+      </g>
       ${extra}
     </svg>`;
   }
@@ -718,20 +785,21 @@
   function clearTimers() { V.timeouts.forEach(clearTimeout); V.timeouts = []; if (V.timer) clearInterval(V.timer); V.timer = null; }
   function setPose(name) {
     const el = $('char'); const child = el.firstElementChild;
+    if (name === 'pose-frustrated') { el.classList.add('shake'); later(600, () => el.classList.remove('shake')); }
     if (child) { child.style.opacity = '0'; }
     later(160, () => { el.innerHTML = poseHTML(name); el.firstElementChild.style.opacity = '0'; requestAnimationFrame(() => { el.firstElementChild.style.opacity = '1'; }); });
   }
   function showBubble(text, done) {
     const b = $('bubble'); b.classList.remove('done'); $('ghost').textContent = text; $('typed').textContent = '';
-    b.classList.add('show');
+    b.classList.add('show'); $('char').classList.add('talking');
     let i = 0; if (V.timer) clearInterval(V.timer);
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     V.timer = setInterval(() => {
       i++; $('typed').textContent = text.slice(0, i);
-      if (i >= text.length) { clearInterval(V.timer); V.timer = null; b.classList.add('done'); done && done(); }
+      if (i >= text.length) { clearInterval(V.timer); V.timer = null; b.classList.add('done'); $('char').classList.remove('talking'); done && done(); }
     }, reduce ? 4 : 40);
   }
-  const hideBubble = () => $('bubble').classList.remove('show');
+  const hideBubble = () => { $('bubble').classList.remove('show'); $('char').classList.remove('talking'); };
 
   function openVisit(stage, preview) {
     clearTimers();
@@ -740,10 +808,11 @@
     $('vtitle').textContent = preview ? 'preview' : TITLES[V.stage];
     $('gone').classList.remove('show'); hideBubble();
     $('actions').classList.add('hidden');
-    const c = $('char'); c.className = 'char'; c.innerHTML = poseHTML(V.stage === 3 ? 'pose-frustrated' : 'pose-peek');
+    const c = $('char'); c.className = 'char live walking'; c.innerHTML = poseHTML(V.stage === 3 ? 'pose-frustrated' : 'pose-peek');
     $('visit').classList.add('open'); document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('in')));
     later(1300, () => {
+      c.classList.remove('walking');
       if (V.stage !== 3) setPose('pose-talk');
       if (V.stage !== 4) $('actions').classList.remove('hidden');
       sayNext();
@@ -761,7 +830,7 @@
   function leave(text) {
     $('actions').classList.add('hidden'); hideBubble(); $('gone-text').textContent = text;
     setPose('pose-walk');
-    later(300, () => $('char').classList.add('out'));
+    later(300, () => $('char').classList.add('out', 'walking'));
     later(1800, () => $('gone').classList.add('show'));
   }
   function closeVisit() {
@@ -854,6 +923,12 @@
 
   let toastT;
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
+
+  // tap her portrait: a little hop
+  $('portrait').addEventListener('click', () => {
+    const el = $('portrait'); el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+    setTimeout(() => el.classList.remove('hop'), 700);
+  });
 
   // ---------- boot ----------
   artStatus(); render(); tick();
