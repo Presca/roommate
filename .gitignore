@@ -1,0 +1,22 @@
+# Xcode
+*.xcodeproj/
+!*.xcodeproj/project.pbxproj
+xcuserdata/
+DerivedData/
+*.xcworkspace/xcuserdata/
+build/
+*.ipa
+*.dSYM.zip
+
+# The generated project (run ./bootstrap.sh)
+Roommate.xcodeproj/
+
+# Fonts are licensed – bring your own
+Roommate/Resources/Fonts/*.ttf
+Roommate/Resources/Fonts/*.otf
+
+# Original character sheets (keep them out of git if you prefer)
+Artwork/*.png
+Artwork/*.jpg
+
+.DS_Store
